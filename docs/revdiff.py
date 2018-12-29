@@ -1,10 +1,15 @@
 import numpy as np
+import os
 
 USE_CONV2D_MATMUL = True
 
+USE_NATIVE = bool(os.getenv('REVDIFF_NATIVE'))
+if USE_NATIVE:
+    import obnum
+
 
 def my_expand_dims3(x, size):
-    y = np.empty((x.shape[0], size, x.shape[1]))
+    y = np.empty((x.shape[0], size, x.shape[1]), dtype=np.float32)
     for i in range(x.shape[0]):
         for j in range(size):
             for k in range(x.shape[1]):
@@ -25,7 +30,7 @@ def my_conv2d_naive(X, K, sh, sw):
     h_y = int((X.shape[2] - K.shape[2]) / sh + 1)
     w_y = int((X.shape[3] - K.shape[3]) / sw + 1)
     
-    Y = np.empty((X.shape[0], K.shape[0], h_y, w_y))
+    Y = np.empty((X.shape[0], K.shape[0], h_y, w_y), dtype=np.float32)
     
     for n in range(X.shape[0]):
         for f in range(K.shape[0]):
@@ -40,7 +45,7 @@ def x2mat(X, K, sh, sw):
     wy = int((X.shape[3] - K.shape[3]) / sw + 1)
     
     mx = np.empty((X.shape[0], hy, wy,
-                   X.shape[1] * K.shape[2] * K.shape[3]))
+                   X.shape[1] * K.shape[2] * K.shape[3]), dtype=np.float32)
     
     for n in range(X.shape[0]):
         for i in range(hy):
@@ -64,7 +69,7 @@ def my_conv2d_matmul(X, K, sh, sw):
 
 def my_pad_tensor(X, ptop, pbot, pleft, pright):
     Y = np.zeros((X.shape[0], X.shape[1], X.shape[2] + ptop + pbot,
-                  X.shape[3] + pleft + pright))
+                  X.shape[3] + pleft + pright)).astype(np.float32)
     Y[:, :, ptop:ptop+X.shape[2], pleft:pleft+X.shape[3]] = X
     return Y
 
@@ -76,7 +81,7 @@ def my_stride0(X, h, w):
     
     Y = np.zeros((X.shape[0], X.shape[1],
                  1 + (h + 1) * (X.shape[2] - 1), 
-                 1 + (w + 1) * (X.shape[3] - 1)))
+                 1 + (w + 1) * (X.shape[3] - 1))).astype(np.float32)
     
     for i1 in range(X.shape[0]):
         for i2 in range(X.shape[1]):
@@ -88,7 +93,7 @@ def my_stride0(X, h, w):
 
 def my_rot180(X):
     
-    Y = np.empty(X.shape)
+    Y = np.empty(X.shape, dtype=np.float32)
     for i1 in range(X.shape[0]):
         for i2 in range(X.shape[1]):
             for i3 in range(X.shape[2]):
@@ -124,7 +129,7 @@ def my_maxpool(X, kh, kw, sh, sw):
     hy = int((X.shape[2] - kh) / sh) + 1
     wy = int((X.shape[3] - kw) / sw) + 1
     
-    Y = np.empty((X.shape[0], X.shape[1], hy, wy))
+    Y = np.empty((X.shape[0], X.shape[1], hy, wy), dtype=np.float32)
     
     for n in range(X.shape[0]):
         for c in range(X.shape[1]):
@@ -138,7 +143,7 @@ def my_maxpool_dk(X, Y, dout, kh, kw, sh, sw):
     hy = int((X.shape[2] - kh) / sh) + 1
     wy = int((X.shape[3] - kw) / sw) + 1
     
-    dX = np.zeros(X.shape)
+    dX = np.zeros(X.shape).astype(np.float32)
     
     for n in range(Y.shape[0]):
         for c in range(Y.shape[1]):
@@ -160,7 +165,7 @@ def my_maxpool_dk(X, Y, dout, kh, kw, sh, sw):
 
 def to_node(x):
     if isinstance(x, (int, float)):
-        x = np.array(x)
+        x = np.array(x).astype(np.float32)
     if isinstance(x, (np.ndarray, np.generic)):
         return Val(x.astype(np.float32))
     elif isinstance(x, Node):
@@ -188,12 +193,34 @@ class Node:
         for x in self.shape: res *= x
         return res
 
+    def has_native(self):
+        return self.native and USE_NATIVE
+
+
+    '''
+    Eval the preprocessors
+    Fix them to be usable by obnum
+    '''
+    def eval_preds_nat(self):
+        def prep(x):
+            x = x.eval()
+            if not x.flags['WRITEABLE']:
+                x = np.array(x, dtype=np.float32)
+
+            if not x.flags['C_CONTIGUOUS']:
+                s = tuple(x.shape)
+                x = x.reshape(-1).reshape(s)
+
+            return x
+        
+        return [prep(x) for x in self.preds]
+    
     '''
     Compute the value of the node
     '''
     def eval(self):
         if self.value is None:
-            self.value = self.compute_native() if self.native else self.compute_value()
+            self.value = self.compute_native() if self.has_native() else self.compute_value()
         return self.value
 
     '''
@@ -280,9 +307,16 @@ class Vadd(Node):
 
     def __init__(self, x, y):
         super().__init__(x.shape, 'vadd', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() + self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vadd(a, b, out)
+        return out
 
     def get_grad(self, pred, dout):
         return dout
@@ -291,9 +325,16 @@ class Vsub(Node):
 
     def __init__(self, x, y):
         super().__init__(x.shape, 'sub', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() - self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vsub(a, b, out)
+        return out
 
     def get_grad(self, pred, dout):
         if pred == self.preds[0]:
@@ -305,9 +346,16 @@ class Vmul(Node):
 
     def __init__(self, x, y):
         super().__init__(x.shape, 'vmul', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() * self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vmul(a, b, out)
+        return out
 
     def get_grad(self, pred, dout):
         if self.preds[0] == pred:
@@ -319,9 +367,16 @@ class Vdiv(Node):
 
     def __init__(self, x, y):
         super().__init__(x.shape, 'vdiv', [x, y])
+        self.native = True
 
-    def eval(self):
+    def compute_value(self):
         return self.preds[0].eval() / self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vdiv(a, b, out)
+        return out
 
     def get_grad(self, pred, dout):
         if self.preds[0] == pred:
@@ -333,9 +388,16 @@ class Vneg(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'neg', [x])
+        self.native = True
 
     def compute_value(self):
         return - self.preds[0].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, = self.eval_preds_nat()
+        obnum.vneg(a, out)
+        return out
 
     def get_grad(self, pred, dout):
         return - dout
@@ -344,9 +406,16 @@ class Vsadd(Node):
 
     def __init__(self, x, y):
         super().__init__(y.shape, 'vsadd', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() + self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vsadd(float(a), b, out)
+        return out
 
     def get_grad(self, pred, dout):
         if self.preds[0] == pred:
@@ -358,9 +427,16 @@ class Vsmul(Node):
 
     def __init__(self, x, y):
         super().__init__(y.shape, 'vsmul', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() * self.preds[1].eval()
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vsmul(float(a), b, out)
+        return out
 
     def get_grad(self, pred, dout):
         if self.preds[0] == pred:
@@ -372,10 +448,17 @@ class Vsdiv(Node):
 
     def __init__(self, x, y):
         super().__init__(y.shape, 'vsdiv', [x, y])
+        self.native = True
 
     def compute_value(self):
         return self.preds[0].eval() / self.preds[1].eval()
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        a, b = self.eval_preds_nat()
+        obnum.vsdiv(float(a), b, out)
+        return out
+    
     def get_grad(self, pred, dout):
         if self.preds[0] == pred:
             return build_dot_vv(dout, build_vsdiv(1, self.preds[1]))
@@ -386,6 +469,13 @@ class Vexp(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vexp', [x])
+        self.native = True
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vexp(x, out)
+        return out
 
     def compute_value(self):
         return np.exp(self.preds[0].eval())
@@ -397,7 +487,14 @@ class Vlog(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vlog', [x])
+        self.native = True
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vlog(x, out)
+        return out
+        
     def compute_value(self):
         return np.log(self.preds[0].eval())
 
@@ -408,10 +505,17 @@ class Vsigmoid(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vsigmoid', [x])
+        self.native = True
 
     def compute_value(self):
         return  1 / (1 + np.exp(-self.preds[0].eval()))
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vsigmoid(x, out)
+        return out
+    
     def get_grad(self, pred, dout):
         return dout * self * op_vsadd(1, -self)
 
@@ -419,10 +523,17 @@ class Vrelu(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vrelu', [x])
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return np.maximum(0, x)
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vrelu(x, out)
+        return out
 
     def get_grad(self, pred, dout):
         return dout * build_vrelu_prime(pred)
@@ -431,23 +542,39 @@ class VreluPrime(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vreluprime', [x])
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return (x > 0).astype(x.dtype)
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vrelu_prime(x, out)
+        return out
+    
     def get_grad(self, pred, dout):
         raise Exception('Vreluprime::get_grad not implemented')
+
+    
 
 class VleakyRelu(Node):
 
     def __init__(self, x, alpha):
         super().__init__(x.shape, 'vrelu', [x])
         self.alpha = alpha
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return np.maximum(0, x) + self.alpha * np.minimum(0, x)
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vleaky_relu(x, float(self.alpha), out)
+        return out   
 
     def get_grad(self, pred, dout):
         return dout * build_vleaky_relu_prime(pred, self.alpha)
@@ -457,11 +584,18 @@ class VleakyReluPrime(Node):
     def __init__(self, x, alpha):
         super().__init__(x.shape, 'vleakyreluprime', [x])
         self.alpha = alpha
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return (x > 0).astype(x.dtype) + self.alpha * (x <= 0).astype(x.dtype)
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vleaky_relu_prime(x, float(self.alpha), out)
+        return out    
+    
     def get_grad(self, pred, dout):
         raise Exception('VleakyReluPrime::get_grad not implemented')
 
@@ -470,10 +604,17 @@ class Velu(Node):
     def __init__(self, x, alpha):
         super().__init__(x.shape, 'velu', [x])
         self.alpha = alpha
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return np.maximum(0, x) + np.minimum(0, self.alpha * (np.exp(x) - 1))
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.velu(x, float(self.alpha), out)
+        return out
 
     def get_grad(self, pred, dout):
         return dout * build_velu_prime(pred, self.alpha)
@@ -483,11 +624,18 @@ class VeluPrime(Node):
     def __init__(self, x, alpha):
         super().__init__(x.shape, 'veluprime', [x])
         self.alpha = alpha
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return (x > 0).astype(x.dtype) + self.alpha * np.exp(x) * (x <= 0).astype(x.dtype)
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.velu_prime(x, float(self.alpha), out)
+        return out
+    
     def get_grad(self, pred, dout):
         raise Exception('VeluPrime::get_grad not implemented')
     
@@ -496,23 +644,36 @@ class Vsoftplus(Node):
     def __init__(self, x, beta = 1):
         super().__init__(x.shape, 'vsoftplus', [x])
         self.beta = beta
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return  (1 / self.beta) * np.log(1 + np.exp(self.beta * x))
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vsoftplus(x, float(self.beta), out)
+        return out
 
     def get_grad(self, pred, dout):
         return dout * build_vsigmoid(build_vsmul(self.beta, pred))
 
 class Vtanh(Node):
 
-    def __init__(self, x, beta = 1):
+    def __init__(self, x):
         super().__init__(x.shape, 'vtanh', [x])
-        self.beta = beta
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
         return np.tanh(x)
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vtanh(x, out)
+        return out
 
     def get_grad(self, pred, dout):
         return dout * build_vsadd(1, - self * self)
@@ -521,9 +682,16 @@ class Vsign(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'vsign', [x])
+        self.native = True
 
     def compute_value(self):
         return np.sign(self.preds[0].eval())
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.vsign(x, out)
+        return out
 
     def get_grad(self, pred, dout):
         raise Exception('DotMmt::Vsign not implemented')
@@ -532,6 +700,7 @@ class Softmax(Node):
 
     def __init__(self, x):
         super().__init__(x.shape, 'softmax', [x])
+        self.native = True
 
     def compute_value(self):
         x = self.preds[0].eval()
@@ -539,29 +708,29 @@ class Softmax(Node):
         x_e = np.exp(x)
         return x_e / np.sum(x_e, axis=1, keepdims=True)
 
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.softmax(x, out)
+        return out
+    
     def get_grad(self, pred, dout):
         raise Exception('Softmax: get_grad not implemented')
-
-'''
-class Sum(Node):
-
-    def __init__(self, x):
-        super().__init__((), 'sum', [x])
-
-    def compute_value(self):
-        return np.sum(self.preds[0].eval())
-
-    def get_grad(self, pred, dout):
-        return build_vsmul(dout, np.ones(pred.shape))
-'''
 
 class Sum3(Node):
 
     def __init__(self, x):
         super().__init__((x.shape[0], x.shape[2]), 'sum3', [x])
+        self.native = True
 
     def compute_value(self):
         return np.sum(self.preds[0].eval(), axis=1)
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.sum3(x, out)
+        return out
 
     def get_grad(self, pred, dout):
         return build_expand_dims(dout, 1, pred.shape[1])
@@ -569,11 +738,18 @@ class Sum3(Node):
 class ExpandDims(Node):
 
     def __init__(self, x, axis, size):
-        new_shape = x.shape[:axis] + (size,) + x.shape[axis+1:]
+        new_shape = x.shape[:axis] + (size,) + x.shape[axis:]
         super().__init__(new_shape, 'expanddims', [x])
+        self.native = True
 
     def compute_value(self):
         return my_expand_dims3(self.preds[0].eval(), self.shape[1])
+
+    def compute_native(self):
+        out = np.empty(self.shape, dtype=np.float32)
+        x, = self.eval_preds_nat()
+        obnum.expand_dims3(x, out)
+        return out
 
     def get_grad(self, pred, dout):
         raise Exception('ExpandDims::get_grad not implemented')
