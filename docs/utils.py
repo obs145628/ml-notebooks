@@ -1,8 +1,10 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import torch
 import torchvision
 import torchvision.transforms as transforms
+
 
 _grads = {}
 def grad_hook(x):
@@ -105,3 +107,46 @@ def vec2one_hot(x, nclasses):
     res = np.zeros((len(x), nclasses))
     res[np.arange(len(x)), x] = 1
     return res
+
+
+
+def make_meshgrid(x, y, h=.02):
+    x_min, x_max = x.min() - 1, x.max() + 1
+    y_min, y_max = y.min() - 1, y.max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+    return xx, yy
+
+
+def plot_contours(clf, X, xtrans = None, **params):
+    x_mesh, y_mesh = make_meshgrid(X[:, 0], X[:, 1])
+    X = np.c_[x_mesh.ravel(), y_mesh.ravel()]
+    Xe = X if xtrans is None else xtrans(X)
+    y_pred = clf.predict(Xe)
+    y_pred = y_pred.reshape(x_mesh.shape)
+    plt.contourf(x_mesh, y_mesh, y_pred, **params)
+
+
+
+def plot_preds(X, y, preds):
+    n = len(X)
+    
+    markers = ['o' if preds[i] == 1 else '^' for i in range(n)]
+    
+    X0 = X[y == 0]
+    preds0 = preds[y == 0]
+    c0 = ['black' if preds0[i] == 0 else 'black' for i in range(len(X0))]
+    plt.scatter(X0[:, 0], X0[:, 1], c=c0, marker='^')
+    
+    X1 = X[y == 1]
+    preds1 = preds[y == 1]
+    c1 = ['black' if preds1[i] == 1 else 'black' for i in range(len(X1))]
+    plt.scatter(X1[:, 0], X1[:, 1], c=c1, marker='o')
+
+
+def plot_reg(X, y, preds):
+    plt.scatter(X[:,0], y, c='b')
+    
+    p = (X[:,0]).argsort()
+    
+    plt.plot(X[:,0][p], preds[p], c='r')
