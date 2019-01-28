@@ -150,3 +150,15 @@ def plot_reg(X, y, preds):
     p = (X[:,0]).argsort()
     
     plt.plot(X[:,0][p], preds[p], c='r')
+
+
+
+def plot_reg_contours(X, y, clf, npts=5000):
+    min_x = np.min(X) - 1e-5 * np.std(X)
+    max_x = np.max(X) + 1e-5 * np.std(X)
+    xx = np.linspace(min_x, max_x, npts)
+    yy = clf.predict(xx)
+    plt.plot(xx, yy, c='r')
+
+    plt.scatter(X, y, c='b')
+    
