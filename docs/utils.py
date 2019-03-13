@@ -206,3 +206,12 @@ def load_mnist_np(dir_path):
         y.append(labels)
     
     return X[0], y[0], X[1], y[1]
+
+
+def dl_file(url, out_path):
+    if os.path.isfile(out_path):
+        return
+    
+    dir_path = os.path.dirname(out_path)
+    os.makedirs(dir_path, exist_ok=True)
+    urllib.request.urlretrieve(url, out_path)

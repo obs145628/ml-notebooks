@@ -1,5 +1,7 @@
+apyori==1.1.1
 cvxopt==1.2.2
 gensim==3.7.0
+googledrivedownloader==0.3
 gym==0.11.0
 jupyter==1.0.0
 nltk==3.4
