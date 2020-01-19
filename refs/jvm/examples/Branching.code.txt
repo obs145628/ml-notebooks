@@ -1,0 +1,47 @@
+Compiled from "Branching.java"
+public class Branching {
+  public Branching();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void test_if(int);
+    Code:
+       0: iload_0
+       1: iconst_3
+       2: if_icmple     7
+       5: iconst_5
+       6: istore_1
+       7: return
+
+  public static void test_if_else(int);
+    Code:
+       0: iload_0
+       1: iconst_3
+       2: if_icmpne     10
+       5: iconst_5
+       6: istore_1
+       7: goto          13
+      10: bipush        7
+      12: istore_1
+      13: return
+
+  public static void test_while(int[]);
+    Code:
+       0: aload_0
+       1: ifnonnull     5
+       4: return
+       5: iconst_0
+       6: istore_1
+       7: iload_1
+       8: iconst_4
+       9: if_icmpge     23
+      12: iinc          1, 5
+      15: aload_0
+      16: iconst_0
+      17: bipush        6
+      19: iastore
+      20: goto          7
+      23: return
+}

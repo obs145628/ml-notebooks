@@ -1,0 +1,23 @@
+Compiled from "Vec2fNew.java"
+public class Vec2fNew {
+  public Vec2fNew(float, float);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: fload_1
+       6: putfield      #7                  // Field _x:F
+       9: aload_0
+      10: fload_2
+      11: putfield      #13                 // Field _y:F
+      14: return
+
+  public static Vec2fNew new_vec(float, float);
+    Code:
+       0: new           #8                  // class Vec2fNew
+       3: dup
+       4: fload_0
+       5: fload_1
+       6: invokespecial #16                 // Method "<init>":(FF)V
+       9: areturn
+}

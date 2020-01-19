@@ -1,0 +1,34 @@
+Compiled from "Vec2fGetSet.java"
+public class Vec2fGetSet {
+  public Vec2fGetSet();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public float getX();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field _x:F
+       4: freturn
+
+  public float getY();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field _y:F
+       4: freturn
+
+  public void setX(float);
+    Code:
+       0: aload_0
+       1: fload_1
+       2: putfield      #7                  // Field _x:F
+       5: return
+
+  public void setY(float);
+    Code:
+       0: aload_0
+       1: fload_1
+       2: putfield      #13                 // Field _y:F
+       5: return
+}

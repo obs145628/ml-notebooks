@@ -1,0 +1,17 @@
+Compiled from "Counter.java"
+public class Counter {
+  Counter();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: getstatic     #7                  // Field _instances:I
+       7: iconst_1
+       8: iadd
+       9: putstatic     #7                  // Field _instances:I
+      12: return
+
+  public static int get_instances();
+    Code:
+       0: getstatic     #7                  // Field _instances:I
+       3: ireturn
+}
