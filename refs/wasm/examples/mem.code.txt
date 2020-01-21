@@ -1,0 +1,38 @@
+
+mem.wasm:	file format wasm 0x1
+
+Code Disassembly:
+
+0000dc func[1]:
+ 0000dd: 10 02                      | call 2 <__wasm_apply_relocs>
+ 0000df: 0b                         | end
+0000e1 func[2] <__wasm_apply_relocs>:
+ 0000e2: 01                         | nop
+ 0000e3: 0b                         | end
+0000e5 func[3] <get_it>:
+ 0000e6: 23 01                      | global.get 1
+ 0000e8: 28 02 18                   | i32.load 2 24
+ 0000eb: 0b                         | end
+0000ed func[4] <set_it>:
+ 0000ee: 23 01                      | global.get 1
+ 0000f0: 20 00                      | local.get 0
+ 0000f2: 36 02 18                   | i32.store 2 24
+ 0000f5: 0b                         | end
+0000f7 func[5] <add_it>:
+ 0000f8: 01 7f                      | local[0] type=i32
+ 0000fa: 23 01                      | global.get 1
+ 0000fc: 22 01                      | local.tee 1
+ 0000fe: 20 01                      | local.get 1
+ 000100: 28 02 18                   | i32.load 2 24
+ 000103: 20 00                      | local.get 0
+ 000105: 6a                         | i32.add
+ 000106: 36 02 18                   | i32.store 2 24
+ 000109: 0b                         | end
+00010b func[6] <__post_instantiate>:
+ 00010c: 10 07                      | call 7
+ 00010e: 10 01                      | call 1
+ 000110: 0b                         | end
+000112 func[7]:
+ 000113: 10 00                      | call 0 <env.g$my_data>
+ 000115: 24 01                      | global.set 1
+ 000117: 0b                         | end

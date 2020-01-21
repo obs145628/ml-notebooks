@@ -1,0 +1,85 @@
+
+math.wasm:	file format wasm 0x1
+
+Code Disassembly:
+
+0000a3 func[0] <__post_instantiate>:
+ 0000a4: 01                         | nop
+ 0000a5: 0b                         | end
+0000a7 func[1] <fact>:
+ 0000a8: 20 00                      | local.get 0
+ 0000aa: 41 02                      | i32.const 2
+ 0000ac: 4e                         | i32.ge_s
+ 0000ad: 04 7f                      | if i32
+ 0000af: 20 00                      |   local.get 0
+ 0000b1: 41 7f                      |   i32.const 4294967295
+ 0000b3: 6a                         |   i32.add
+ 0000b4: 10 01                      |   call 1 <fact>
+ 0000b6: 20 00                      |   local.get 0
+ 0000b8: 6c                         |   i32.mul
+ 0000b9: 05                         | else
+ 0000ba: 41 01                      |   i32.const 1
+ 0000bc: 0b                         | end
+ 0000bd: 0b                         | end
+0000bf func[2] <add>:
+ 0000c0: 20 00                      | local.get 0
+ 0000c2: 20 01                      | local.get 1
+ 0000c4: 6a                         | i32.add
+ 0000c5: 0b                         | end
+0000c7 func[3] <my_pow>:
+ 0000c8: 01 7f                      | local[0] type=i32
+ 0000ca: 02 40                      | block
+ 0000cc: 02 40                      |   block
+ 0000ce: 20 01                      |     local.get 1
+ 0000d0: 41 02                      |     i32.const 2
+ 0000d2: 4d                         |     i32.le_u
+ 0000d3: 04 40                      |     if
+ 0000d5: 41 01                      |       i32.const 1
+ 0000d7: 21 02                      |       local.set 2
+ 0000d9: 02 40                      |       block
+ 0000db: 20 01                      |         local.get 1
+ 0000dd: 41 01                      |         i32.const 1
+ 0000df: 6b                         |         i32.sub
+ 0000e0: 0e 02 02 00 03             |         br_table 2 0 3
+ 0000e5: 0b                         |       end
+ 0000e6: 20 00                      |       local.get 0
+ 0000e8: 20 00                      |       local.get 0
+ 0000ea: 6c                         |       i32.mul
+ 0000eb: 0f                         |       return
+ 0000ec: 0b                         |     end
+ 0000ed: 20 00                      |     local.get 0
+ 0000ef: 20 00                      |     local.get 0
+ 0000f1: 6c                         |     i32.mul
+ 0000f2: 20 01                      |     local.get 1
+ 0000f4: 41 02                      |     i32.const 2
+ 0000f6: 6d                         |     i32.div_s
+ 0000f7: 10 03                      |     call 3 <my_pow>
+ 0000f9: 20 00                      |     local.get 0
+ 0000fb: 41 01                      |     i32.const 1
+ 0000fd: 20 01                      |     local.get 1
+ 0000ff: 41 01                      |     i32.const 1
+ 000101: 71                         |     i32.and
+ 000102: 1b                         |     select
+ 000103: 6c                         |     i32.mul
+ 000104: 0f                         |     return
+ 000105: 0b                         |   end
+ 000106: 20 00                      |   local.get 0
+ 000108: 21 02                      |   local.set 2
+ 00010a: 0b                         | end
+ 00010b: 20 02                      | local.get 2
+ 00010d: 0b                         | end
+00010f func[4] <my_abs>:
+ 000110: 01 7f                      | local[0] type=i32
+ 000112: 20 00                      | local.get 0
+ 000114: 20 00                      | local.get 0
+ 000116: 41 1f                      | i32.const 31
+ 000118: 75                         | i32.shr_s
+ 000119: 22 01                      | local.tee 1
+ 00011b: 6a                         | i32.add
+ 00011c: 20 01                      | local.get 1
+ 00011e: 73                         | i32.xor
+ 00011f: 0b                         | end
+000121 func[5] <is_null>:
+ 000122: 20 00                      | local.get 0
+ 000124: 45                         | i32.eqz
+ 000125: 0b                         | end

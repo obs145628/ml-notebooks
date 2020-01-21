@@ -1,0 +1,130 @@
+
+loop.wasm:	file format wasm 0x1
+
+Code Disassembly:
+
+0000ae func[1]:
+ 0000af: 10 02                      | call 2 <__wasm_apply_relocs>
+ 0000b1: 0b                         | end
+0000b3 func[2] <__wasm_apply_relocs>:
+ 0000b4: 01                         | nop
+ 0000b5: 0b                         | end
+0000b7 func[3] <foo_n>:
+ 0000b8: 01 7f                      | local[0] type=i32
+ 0000ba: 41 00                      | i32.const 0
+ 0000bc: 21 01                      | local.set 1
+ 0000be: 20 00                      | local.get 0
+ 0000c0: 41 00                      | i32.const 0
+ 0000c2: 4a                         | i32.gt_s
+ 0000c3: 04 40                      | if
+ 0000c5: 03 40                      |   loop
+ 0000c7: 10 00                      |     call 0 <env.foo>
+ 0000c9: 20 01                      |     local.get 1
+ 0000cb: 41 01                      |     i32.const 1
+ 0000cd: 6a                         |     i32.add
+ 0000ce: 22 01                      |     local.tee 1
+ 0000d0: 20 00                      |     local.get 0
+ 0000d2: 47                         |     i32.ne
+ 0000d3: 0d 00                      |     br_if 0
+ 0000d5: 0b                         |   end
+ 0000d6: 0b                         | end
+ 0000d7: 0b                         | end
+0000d9 func[4] <fact>:
+ 0000da: 02 7f                      | local[0..1] type=i32
+ 0000dc: 41 01                      | i32.const 1
+ 0000de: 21 01                      | local.set 1
+ 0000e0: 20 00                      | local.get 0
+ 0000e2: 41 02                      | i32.const 2
+ 0000e4: 4e                         | i32.ge_s
+ 0000e5: 04 40                      | if
+ 0000e7: 03 40                      |   loop
+ 0000e9: 20 00                      |     local.get 0
+ 0000eb: 20 01                      |     local.get 1
+ 0000ed: 6c                         |     i32.mul
+ 0000ee: 21 01                      |     local.set 1
+ 0000f0: 20 00                      |     local.get 0
+ 0000f2: 41 02                      |     i32.const 2
+ 0000f4: 4a                         |     i32.gt_s
+ 0000f5: 21 02                      |     local.set 2
+ 0000f7: 20 00                      |     local.get 0
+ 0000f9: 41 7f                      |     i32.const 4294967295
+ 0000fb: 6a                         |     i32.add
+ 0000fc: 21 00                      |     local.set 0
+ 0000fe: 20 02                      |     local.get 2
+ 000100: 0d 00                      |     br_if 0
+ 000102: 0b                         |   end
+ 000103: 0b                         | end
+ 000104: 20 01                      | local.get 1
+ 000106: 0b                         | end
+000108 func[5] <el_break>:
+ 000109: 02 7f                      | local[0..1] type=i32
+ 00010b: 41 00                      | i32.const 0
+ 00010d: 21 01                      | local.set 1
+ 00010f: 02 40                      | block
+ 000111: 20 00                      |   local.get 0
+ 000113: 41 03                      |   i32.const 3
+ 000115: 6d                         |   i32.div_s
+ 000116: 22 02                      |   local.tee 2
+ 000118: 20 00                      |   local.get 0
+ 00011a: 4e                         |   i32.ge_s
+ 00011b: 0d 00                      |   br_if 0
+ 00011d: 20 02                      |   local.get 2
+ 00011f: 41 03                      |   i32.const 3
+ 000121: 71                         |   i32.and
+ 000122: 45                         |   i32.eqz
+ 000123: 0d 00                      |   br_if 0
+ 000125: 20 02                      |   local.get 2
+ 000127: 41 7f                      |   i32.const 4294967295
+ 000129: 73                         |   i32.xor
+ 00012a: 22 01                      |   local.tee 1
+ 00012c: 20 00                      |   local.get 0
+ 00012e: 6a                         |   i32.add
+ 00012f: 22 00                      |   local.tee 0
+ 000131: 20 01                      |   local.get 1
+ 000133: 41 03                      |   i32.const 3
+ 000135: 71                         |   i32.and
+ 000136: 22 01                      |   local.tee 1
+ 000138: 20 00                      |   local.get 0
+ 00013a: 20 01                      |   local.get 1
+ 00013c: 49                         |   i32.lt_u
+ 00013d: 1b                         |   select
+ 00013e: 41 01                      |   i32.const 1
+ 000140: 6a                         |   i32.add
+ 000141: 21 01                      |   local.set 1
+ 000143: 0b                         | end
+ 000144: 20 01                      | local.get 1
+ 000146: 0b                         | end
+000148 func[6] <el_continue>:
+ 000149: 02 7f                      | local[0..1] type=i32
+ 00014b: 41 00                      | i32.const 0
+ 00014d: 21 01                      | local.set 1
+ 00014f: 20 00                      | local.get 0
+ 000151: 41 03                      | i32.const 3
+ 000153: 6d                         | i32.div_s
+ 000154: 22 02                      | local.tee 2
+ 000156: 20 00                      | local.get 0
+ 000158: 48                         | i32.lt_s
+ 000159: 04 40                      | if
+ 00015b: 03 40                      |   loop
+ 00015d: 20 01                      |     local.get 1
+ 00015f: 20 02                      |     local.get 2
+ 000161: 41 03                      |     i32.const 3
+ 000163: 71                         |     i32.and
+ 000164: 41 00                      |     i32.const 0
+ 000166: 47                         |     i32.ne
+ 000167: 6a                         |     i32.add
+ 000168: 21 01                      |     local.set 1
+ 00016a: 20 02                      |     local.get 2
+ 00016c: 41 01                      |     i32.const 1
+ 00016e: 6a                         |     i32.add
+ 00016f: 22 02                      |     local.tee 2
+ 000171: 20 00                      |     local.get 0
+ 000173: 47                         |     i32.ne
+ 000174: 0d 00                      |     br_if 0
+ 000176: 0b                         |   end
+ 000177: 0b                         | end
+ 000178: 20 01                      | local.get 1
+ 00017a: 0b                         | end
+00017c func[7] <__post_instantiate>:
+ 00017d: 10 01                      | call 1
+ 00017f: 0b                         | end
