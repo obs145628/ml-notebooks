@@ -1,0 +1,16 @@
+article
+
+I Introduction
+
+These days, I started to wonder, If I had to recreate a Virtual Machine, how would would I implement it ? Which design ? 
+Should I rater do stack based or regsiter based ?
+What instructions should be available ?
+Will it be a sequence of really low-levlel instructions similar to assembly, or something higher-level ?
+To answers all these questions, I figured the best way would be to look at some of the most famous VMs.  
+
+I looked at a few, I will present them in this article. 
+I mostly spend my time looking at JVM and WASM, and did 2 small projects to get a better view of how it works.
+I also looked a little at other ones: ART/DVM for Android, CLR for .NET languages such as C#, and the VM of CPython.
+
+II JVM and Java Bytecode
+
