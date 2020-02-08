@@ -21,7 +21,6 @@
 #include "stdio.h"
 
 void err(int_t c) {
-  assert(0);
   std_putc(69); // E
   std_putc(58); //:
   std_putc(c);
@@ -29,7 +28,9 @@ void err(int_t c) {
   std_exit(1);
 }
 
-int_t is_wspace(int_t x) { return x == 9 || x == 10 || x == 32; }
+int_t is_wspace(int_t x) {
+  return x == 9|| x == 10 || x == 32;
+}
 
 int_t skip_ws() {
   int_t c = std_getc();

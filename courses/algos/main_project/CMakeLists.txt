@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 
+include_directories("./libs/lealloc_v0/include/")
+include_directories("./libs/ledebug/include/")
 include_directories("./libs/leio/include/")
 include_directories("./libs/lestd/include/")
+
 
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -Werror -pedantic -Wglobal-constructors -O0 -g3" CACHE STRING "" FORCE)

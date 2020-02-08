@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-FORCE_REBUILD = False
+FORCE_REBUILD = True
 DEBUG = False
 TS_ERROR_CODE = 10
 
