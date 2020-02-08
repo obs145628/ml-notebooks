@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 include_directories("./libs/lealloc_v0/include/")
 include_directories("./libs/ledebug/include/")
 include_directories("./libs/leio/include/")
+include_directories("./libs/lerand/include/")
 include_directories("./libs/lestd/include/")
 
 
