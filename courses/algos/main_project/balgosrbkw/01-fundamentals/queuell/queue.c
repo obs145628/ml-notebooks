@@ -39,7 +39,6 @@ void queue_push(int_t q, int_t val) {
   std_fmemset(q + 2, std_fmemget(q + 2) + 1);
 }
 
-// Pop and returns one item from the front of the queue
 int_t queue_pop(int_t q) {
   int_t first = std_fmemget(q);
   panic_ifn(first);

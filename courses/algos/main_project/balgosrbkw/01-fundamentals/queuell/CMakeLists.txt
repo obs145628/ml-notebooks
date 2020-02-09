@@ -2,14 +2,14 @@ set(SRC
   main.c
   queue.c
 )
-set(TEST_NAME test_balgosrbkw_03_queuell)
+set(TEST_NAME test_balgosrbkw_01_queuell)
 
 
 add_executable(${TEST_NAME} ${SRC})
 target_link_libraries(${TEST_NAME} ledebug leio lealloc_v0)
 
 
-add_custom_target(check-balgosrbkw-03-queuell
+add_custom_target(check-balgosrbkw-01-queuell
   COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/checker.py
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${TEST_NAME}

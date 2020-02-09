@@ -1,15 +1,15 @@
 set(SRC
   main.c
-  stack.c
+  uf.c
 )
-set(TEST_NAME test_balgosrbkw_03_stack)
+set(TEST_NAME test_balgosrbkw_01_unionfind)
 
 
 add_executable(${TEST_NAME} ${SRC})
 target_link_libraries(${TEST_NAME} ledebug leio lealloc_v0)
 
 
-add_custom_target(check-balgosrbkw-03-stack
+add_custom_target(check-balgosrbkw-01-unionfind
   COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/checker.py
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${TEST_NAME}
