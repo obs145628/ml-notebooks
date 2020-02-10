@@ -2,6 +2,10 @@
 #include "lealloc.h"
 #include "ledebug.h"
 
+// Implementation based on linked list
+// Keys are unordered
+// All operations are linear
+
 static int_t find_key(int_t st, int_t key) {
   int_t node = std_fmemget(st);
   int_t target = 0;
@@ -65,8 +69,6 @@ int_t table_put(int_t st, int_t key, int_t val) {
   return insert;
 }
 
-// Remove the entry associated with the key
-// Returns 1 if the key was found and deleted, 0 otherwhise
 int_t table_delete(int_t st, int_t key) {
   int_t node = std_fmemget(st);
   int_t target = 0;
