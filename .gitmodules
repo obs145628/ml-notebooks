@@ -1,0 +1,3 @@
+[submodule "courses/algos/main_project/extern/Catch2"]
+	path = courses/algos/main_project/extern/Catch2
+	url = https://github.com/catchorg/Catch2.git
