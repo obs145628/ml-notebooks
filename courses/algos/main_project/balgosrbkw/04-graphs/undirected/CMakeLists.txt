@@ -2,11 +2,13 @@ set(SRC
   main.cc
 
   base.cc
+  bfs-path.cc
   dfs.cc
   dfs-path.cc
   graph.cc
 
   test_base.cc
+  test_bfs_path.cc
   test_dfs.cc
   test_dfs_path.cc
   test_graph.cc
