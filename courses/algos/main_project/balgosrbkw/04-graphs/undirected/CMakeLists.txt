@@ -1,5 +1,14 @@
 set(SRC
   main.cc
+
+  base.cc
+  dfs.cc
+  dfs-path.cc
+  graph.cc
+
+  test_base.cc
+  test_dfs.cc
+  test_dfs_path.cc
   test_graph.cc
 )
 set(TEST_NAME test_balgosrbkw_04_undirected)
