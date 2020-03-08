@@ -13,10 +13,4 @@ TEST_CASE("SCC", "") {
   REQUIRE(scc.component(scc.id(6)) == std::set<std::size_t>{6});
   REQUIRE(scc.component(scc.id(7)) == std::set<std::size_t>{7, 8});
   REQUIRE(scc.component(scc.id(9)) == std::set<std::size_t>{9, 10, 11, 12});
-
-  // DFSOrder order(g);
-  // REQUIRE(order.pre_order() == std::vector<std::size_t>{0, 2, 3, 5, 1, 4});
-  // REQUIRE(order.post_order() == std::vector<std::size_t>{5, 3, 2, 0, 1, 4});
-  // REQUIRE(order.reverse_post_order() ==
-  //        std::vector<std::size_t>{4, 1, 0, 2, 3, 5});
 }
