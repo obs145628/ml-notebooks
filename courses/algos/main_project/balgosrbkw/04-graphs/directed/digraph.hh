@@ -47,7 +47,7 @@ public:
   edge_iterator_t adj_end(std::size_t v) const;
 
   // Create a new graph with all edges inverted
-  Digraph reverse();
+  Digraph reverse() const;
 
   /// Dump Graph to tree format
   void dump_tree(std::ostream &os);

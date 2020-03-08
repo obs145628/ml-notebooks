@@ -42,7 +42,7 @@ Digraph::edge_iterator_t Digraph::adj_end(std::size_t v) const {
   return _adj[v].cend();
 }
 
-Digraph Digraph::reverse() {
+Digraph Digraph::reverse() const {
   Digraph res(vcount());
   for (std::size_t v = 0; v < vcount(); ++v)
     for (auto it = adj_begin(v); it != adj_end(v); ++it)
