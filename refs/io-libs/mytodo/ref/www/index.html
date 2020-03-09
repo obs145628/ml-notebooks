@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>MyTODO</title>
+    <meta charset="utf=8" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    
+  </head>
+
+  <body>
+    <h1>MyTODO</h1>
+
+    <table id="tasks-table" class="table">
+      <thead>
+	<tr>
+	  <th scope="col">id</th>
+	  <th scope="col">title</th>
+	  <th scope="col">details</th>
+	  <th scope="col">level</th>
+	  <th scope="col">edit</th>
+	</tr>
+      </thead>
+      <tbody id="tasks-table-body">
+      </tbody>
+    </table>
+
+    <div id="tasks-empty">
+      No tasks found.
+    </div>
+
+    <div id="task-new">
+      Title: <input type="text" id="in-title-new" />
+      Details: <input type="text" id="in-details-new" />
+      Level: <input type="text" id="in-level-new" />
+      <input type="button" id="btn-add" value="Create" />
+    </div>
+   
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="js/app.js"></script>
+  </body>
+  
+</html>
