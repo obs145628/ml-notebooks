@@ -6,7 +6,6 @@ FORCE_REBUILD = True
 DEBUG = False
 TS_ERROR_CODE = 10
 
-
 ROOT_DIR = sys.argv[1]
 TEST_NAME = sys.argv[2]
 BUILD_DIR = sys.argv[3]

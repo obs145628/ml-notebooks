@@ -18,7 +18,7 @@ set(SRC
   test_topological.cc
   test_transitive_closure.cc
 )
-set(TEST_NAME test_balgosrbkw_04_directed)
+set(TEST_NAME utest_balgosrbkw_04_directed.bin)
 
 
 add_executable(${TEST_NAME} ${SRC})
@@ -27,3 +27,6 @@ add_custom_target(check-balgosrbkw-04-directed
   COMMAND $<TARGET_FILE:${TEST_NAME}>
   DEPENDS ${TEST_NAME}
 )
+
+
+add_dependencies(build-tests ${TEST_NAME})
