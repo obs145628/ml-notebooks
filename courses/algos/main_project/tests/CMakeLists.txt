@@ -2,7 +2,7 @@ add_custom_target(build-tests)
 
 add_custom_target(check
   COMMAND
-  OBTS_OUTPUT_DIR=${CMAKE_BINARY_DIR}/obts
-  python3 /home/obs/lun/obdev/apps/tsauto.py ${CMAKE_SOURCE_DIR}
+  /home/obs/lun/obdev/bin/obdev ts run ${CMAKE_SOURCE_DIR}
+  --out ${CMAKE_BINARY_DIR}/obts
   DEPENDS build-tests
 )
