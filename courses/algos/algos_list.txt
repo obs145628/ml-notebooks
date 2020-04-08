@@ -1,0 +1,27 @@
+
+This a list of all algorithms I have understood, implemented and tested.
+
+
+# Sorting
+
+insertion sort | Algos CLR 3e p18 | writer:algosclr/c2_inserstion_sort.c
+
+merge sort | Algos CLR 3e p34 | writer:algosclr/merge_sort.c
+
+max heap | Algos 4e SW p318 | c0:include/c0/extensions/pqueue/max_heap.h
+
+index max heap | Algos 4e SW p320 | c0:include/c0/extensions/pqueue/index_max_heap.h
+
+# Searching
+
+linear search | https://www.geeksforgeeks.org/linear-search/ | writer:algosgfg/linsearch.c
+
+binary search | https://www.geeksforgeeks.org/binary-search/ | writer:algosgfg/binsearch.c
+
+interpolation search | https://www.geeksforgeeks.org/interpolation-search/ | writer:algosgfg/interp_search.c
+
+# Graphs
+
+MST Lazy Prim | Algos 4e SW p619 | writer:algos4th/chap4/mst/mst_prim.c
+
+MST Eager Prim | Algos 4e SW p622 | writer:algos4th/chap4/mst/mst_prim_eager.c
