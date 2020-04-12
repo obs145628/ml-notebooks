@@ -26,9 +26,13 @@ MST Lazy Prim | Algos 4e SW p619 | writer:algos4th/chap4/mst/mst_prim.c
 
 MST Eager Prim | Algos 4e SW p622 | writer:algos4th/chap4/mst/mst_prim_eager.c
 
+MST Kruskal | ALgos 4e WS p627 | writer:algos4th/chap4/mst/mst_kruskal.c
+
 Unionfind | Algos 4e SW p228 | writer:algos4th/chap4/mst/unionfind.c
 
 
 # Misc
 
 maximum subarray divide conquer | Algos CLR 3e p72 | writer:algosclr/maximum_subarray.c
+
+maximum subarray kadane's algo | https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/ | writer:algosclr/maximum_subarray.c
