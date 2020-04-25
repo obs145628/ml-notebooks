@@ -30,6 +30,8 @@ MST Kruskal | ALgos 4e WS p627 | writer:algos4th/chap4/mst/mst_kruskal.c
 
 Unionfind | Algos 4e SW p228 | writer:algos4th/chap4/mst/unionfind.c
 
+Dijkstra | Algoss 4e SW p655 | writer:algos4th/chap4/paths/dijkstra.c
+
 
 # Misc
 
