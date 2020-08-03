@@ -34,6 +34,8 @@ Dijkstra | Algos 4e SW p655 | writer:algos4th/chap4/paths/dijkstra.c
 
 Topological Sort | Algos 4e SW p580 | writer:algos4th/chap4/paths/topo.c
 
+Shortest path in DAG | ALgos 4e SW p660 | writer:algos4th/chap4/paths/dag.c
+
 
 # Misc
 
