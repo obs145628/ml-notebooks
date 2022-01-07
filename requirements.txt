@@ -1,5 +1,5 @@
 apyori==1.1.1
-cvxopt==1.2.2
+cvxopt==1.2.7
 gensim==3.7.0
 googledrivedownloader==0.3
 gym==0.11.0
